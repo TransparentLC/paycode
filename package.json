@@ -1,0 +1,23 @@
+{
+  "name": "paycode",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && purgecss --config purgecss.config.cjs --output dist/assets",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^8.0.0",
+    "rollup-plugin-visualizer": "^7.0.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.10",
+    "vite-plugin-html": "^3.2.2"
+  },
+  "dependencies": {
+    "@knadh/oat": "^0.6.1",
+    "qr-scanner": "^1.4.2",
+    "qrcode-generator": "^2.0.4"
+  }
+}
