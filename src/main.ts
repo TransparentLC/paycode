@@ -3,6 +3,7 @@ import '@knadh/oat/oat.min.css';
 import wechatSansStdMediumUrl from './assets/WeChatSansStd-Medium.woff2?url';
 import wechatTemplateUrl from './assets/wechat.webp?url';
 import alipayTemplateUrl from './assets/alipay.webp?url';
+import evalExpression from './eval-expression';
 
 const $wechat = document.getElementById('wechat') as HTMLInputElement;
 const $alipay = document.getElementById('alipay') as HTMLInputElement;
@@ -196,20 +197,31 @@ try {
 $submit.onclick = async () => {
     const wechat = $wechat.value;
     const alipay = $alipay.value;
-    const amountDivide = /^(\d+(?:\.\d+)?)\/(\d+)$/g.exec($amount.value);
+    const amountParsed = (() => {
+        try {
+            return evalExpression($amount.value);
+        } catch {
+            return null;
+        }
+    })();
     const amount = $amount.value
-        ? (amountDivide
-            ? (parseFloat(amountDivide[1]) / parseInt(amountDivide[2], 10))
-            : parseFloat($amount.value)
-        ).toFixed(2)
+        ? (amountParsed ? amountParsed[1] : parseFloat($amount.value)).toFixed(2)
         : '';
     const note = ($divide.checked
         ? $note.value.replace(
-            /(\d+(?:\.\d+)?)\/(\d+)/g,
-            (...m) => `${m[0]}=${(parseFloat(m[1]) / parseInt(m[2], 10)).toFixed(2)}`,
+            /[\d\.+\-*/()\s]+/g,
+            (...m) => {
+                if (m[0].match(/\s+/)) return m[0];
+                try {
+                    const [formatted, result] = evalExpression(m[0]);
+                    return formatted === m[0] ? m[0] : `${formatted} = ${result.toFixed(2)}`;
+                } catch {
+                    return m[0];
+                }
+            },
         )
         : $note.value) || (
-            ($divide.checked && amountDivide) ? `${amountDivide[1]} / ${amountDivide[2]} = ${amount}` : ''
+            ($divide.checked && amountParsed) ? `${amountParsed[0]} = ${amountParsed[1].toFixed(2)}` : ''
         );
     const name = $name.value
 
