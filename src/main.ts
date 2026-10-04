@@ -209,9 +209,8 @@ $submit.onclick = async () => {
         : '';
     const note = ($divide.checked
         ? $note.value.replace(
-            /[\d\.+\-*/()\s]+/g,
+            /[\d\.+\-*/()][\d\.+\-*/()\s]+[\d\.+\-*/()]/g,
             (...m) => {
-                if (m[0].match(/\s+/)) return m[0];
                 try {
                     const [formatted, result] = evalExpression(m[0]);
                     return formatted === m[0] ? m[0] : `${formatted} = ${result.toFixed(2)}`;
